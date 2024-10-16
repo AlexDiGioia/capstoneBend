@@ -25,6 +25,7 @@ public class Disegno {
 
     private String title;
 
+
     @OneToMany(mappedBy = "disegno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Commento> commenti;
 
