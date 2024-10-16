@@ -2,6 +2,7 @@ package alexdigioia.capstoneBend.services;
 
 import alexdigioia.capstoneBend.entities.Richiesta;
 import alexdigioia.capstoneBend.repositories.RichiestaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,11 +11,9 @@ import java.util.UUID;
 @Service
 public class RichiestaService {
 
-    private final RichiestaRepository richiestaRepository;
+    @Autowired
+    private RichiestaRepository richiestaRepository;
 
-    public RichiestaService(RichiestaRepository richiestaRepository) {
-        this.richiestaRepository = richiestaRepository;
-    }
 
     public List<Richiesta> findAll() {
         return richiestaRepository.findAll();

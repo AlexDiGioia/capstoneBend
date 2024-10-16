@@ -7,7 +7,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,27 +20,33 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"password"})
-public class Utente {
+@JsonIgnoreProperties({"password", "listaAmici", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired", "authorities"})
+public class Utente implements UserDetails {
 
     @Id
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private UUID idUtente;
-
-    @Column(nullable = false, unique = true)
+    private String username;
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false)
     private String nome;
-
-    @Column(nullable = false)
     private String cognome;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Ruolo ruolo;
+
+    public Utente(String username, String email, String password, String nome, String cognome, Ruolo ruolo) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.ruolo = ruolo;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.ruolo.name()));
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -13,17 +14,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Richiesta {
+public class Disegno {
 
     @Id
     @GeneratedValue
     @Setter(AccessLevel.NONE)
-    private UUID idRichiesta;
+    private UUID idDisegno;
 
-    @Column(nullable = false)
-    private String descrizione;
+    private String imageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "utente_id", nullable = false)
-    private Utente utente;
+    private String title;
+
+    @OneToMany(mappedBy = "disegno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Commento> commenti;
+
 }
