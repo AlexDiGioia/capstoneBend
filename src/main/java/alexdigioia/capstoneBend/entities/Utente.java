@@ -1,6 +1,7 @@
 package alexdigioia.capstoneBend.entities;
 
 import alexdigioia.capstoneBend.enums.Ruolo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +36,9 @@ public class Utente implements UserDetails {
     private String cognome;
     @Enumerated(EnumType.STRING)
     private Ruolo ruolo;
+    @JsonIgnore
+    @OneToMany(mappedBy = "utente_id")
+    private List<Commento> commentiList = new ArrayList<>();
 
     public Utente(String username, String email, String password, String nome, String cognome, Ruolo ruolo) {
         this.username = username;
