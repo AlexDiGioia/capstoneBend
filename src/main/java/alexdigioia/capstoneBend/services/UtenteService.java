@@ -24,7 +24,7 @@ public class UtenteService {
     private UtenteRepository utenteRepository;
 
     @Autowired
-    private Mailgun mailSander;
+    private Mailgun mailSender;
 
     @Autowired
     private PasswordEncoder bcrypt;
@@ -46,7 +46,7 @@ public class UtenteService {
 
         savedUtente.setUsername(utenteDTO.username());
         savedUtente.setEmail(utenteDTO.email());
-        savedUtente.setPassword(utenteDTO.password());
+        savedUtente.setPassword(bcrypt.encode(utenteDTO.password()));
         savedUtente.setNome(utenteDTO.nome());
         savedUtente.setCognome(utenteDTO.cognome());
 
@@ -73,7 +73,7 @@ public class UtenteService {
         savedUtente.setCognome(utenteDTO.cognome());
 
         utenteRepository.save(savedUtente);
-        mailSander.sendRegistrationEmail(savedUtente);
+        mailSender.sendRegistrationEmail(savedUtente);
 
         return new UtenteRespDTO(savedUtente.getIdUtente());
 

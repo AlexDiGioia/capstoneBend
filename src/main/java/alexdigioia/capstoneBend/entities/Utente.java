@@ -36,9 +36,14 @@ public class Utente implements UserDetails {
     private String cognome;
     @Enumerated(EnumType.STRING)
     private Ruolo ruolo;
+
     @JsonIgnore
-    @OneToMany(mappedBy = "utente_id")
+    @OneToMany(mappedBy = "utente")
     private List<Commento> commentiList = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Richiesta> richiesteList;
 
     public Utente(String username, String email, String password, String nome, String cognome, Ruolo ruolo) {
         this.username = username;

@@ -30,7 +30,7 @@ public class Richiesta {
     private double prezzo;
 
     @ManyToOne
-    @JoinColumn(name = "utente_id", nullable = false)
+    @JoinColumn(name = "utente", nullable = false)
     private Utente utente;
 
     public Richiesta(String descrizione, TipoDisegno tipoDisegno, boolean sfondoIncluso, Utente utente) {

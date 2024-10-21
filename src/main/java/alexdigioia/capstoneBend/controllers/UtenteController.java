@@ -1,6 +1,9 @@
 package alexdigioia.capstoneBend.controllers;
 
+import alexdigioia.capstoneBend.entities.Commento;
+import alexdigioia.capstoneBend.entities.Richiesta;
 import alexdigioia.capstoneBend.entities.Utente;
+import alexdigioia.capstoneBend.payloads.CommentoDTO;
 import alexdigioia.capstoneBend.payloads.UtenteDTO;
 import alexdigioia.capstoneBend.payloads.UtenteRespDTO;
 import alexdigioia.capstoneBend.services.CommentoService;
@@ -14,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -66,6 +70,37 @@ public class UtenteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProfile(@AuthenticationPrincipal Utente utenteCorrenteAutenticato) {
         this.utenteService.deleteById(utenteCorrenteAutenticato.getIdUtente());
+    }
+
+    // Richieste dell'utente loggato
+    @GetMapping("/me/richieste")
+    public List<Richiesta> getRichieste(@AuthenticationPrincipal Utente utenteCorrente) {
+        return utenteCorrente.getRichiesteList();
+    }
+
+    @DeleteMapping("/me/richieste/{richiestaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRichiesta(@AuthenticationPrincipal Utente utenteCorrente, @PathVariable UUID richiestaId) {
+        richiestaService.deleteRichiesta(richiestaId);
+    }
+
+    // Commenti dell'utente loggato
+    @GetMapping("/me/commenti")
+    public List<Commento> getCommenti(@AuthenticationPrincipal Utente utenteCorrente) {
+        return commentoService.findByUtente(utenteCorrente);
+    }
+
+    @PutMapping("/me/commenti/{commentoId}")
+    public Commento updateCommento(@AuthenticationPrincipal Utente utenteCorrente,
+                                   @PathVariable UUID commentoId,
+                                   @RequestBody @Validated CommentoDTO body) {
+        return commentoService.updateCommento(commentoId, body, utenteCorrente);
+    }
+
+    @DeleteMapping("/me/commenti/{commentoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCommento(@AuthenticationPrincipal Utente utenteCorrente, @PathVariable UUID commentoId) {
+        commentoService.deleteCommento(commentoId, utenteCorrente);
     }
 
 }

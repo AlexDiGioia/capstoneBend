@@ -8,6 +8,7 @@ import alexdigioia.capstoneBend.payloads.RichiestaDTO;
 import alexdigioia.capstoneBend.repositories.DisegnoRepository;
 import alexdigioia.capstoneBend.repositories.RichiestaRepository;
 import alexdigioia.capstoneBend.repositories.UtenteRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,5 +56,12 @@ public class RichiestaService {
             prezzo += 40;
         }
         return prezzo;
+    }
+
+    @Transactional
+    public void deleteRichiesta(UUID richiestaId) {
+        Richiesta richiesta = richiestaRepository.findById(richiestaId)
+                .orElseThrow(() -> new NotFoundException("Richiesta non trovata con id: " + richiestaId));
+        richiestaRepository.delete(richiesta);
     }
 }

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,12 +30,10 @@ public class Commento {
 
     private String testo;
 
-    private LocalDateTime dataCommento;
 
     public Commento(Disegno disegno, Utente utente, String testo) {
         this.disegno = disegno;
         this.utente = utente;
         this.testo = testo;
-        this.dataCommento = LocalDateTime.now();
     }
 }
