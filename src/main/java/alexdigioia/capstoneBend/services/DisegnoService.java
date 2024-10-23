@@ -2,12 +2,12 @@ package alexdigioia.capstoneBend.services;
 
 import alexdigioia.capstoneBend.entities.Disegno;
 import alexdigioia.capstoneBend.exceptions.NotFoundException;
+import alexdigioia.capstoneBend.payloads.DisegnoDTO;
 import alexdigioia.capstoneBend.repositories.DisegnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,21 +16,11 @@ public class DisegnoService {
     @Autowired
     private DisegnoRepository disegnoRepository;
 
-
-    public Disegno save(Disegno disegno) {
+    public Disegno save(DisegnoDTO disegnoDTO) {
+        Disegno disegno = new Disegno();
+        disegno.setImageUrl(disegnoDTO.imageUrl());
+        disegno.setTitle(disegnoDTO.title());
         return disegnoRepository.save(disegno);
-    }
-
-    public Disegno update(UUID id, Disegno updatedDisegno) {
-        Optional<Disegno> existingDisegnoOpt = disegnoRepository.findById(id);
-        if (existingDisegnoOpt.isPresent()) {
-            Disegno existingDisegno = existingDisegnoOpt.get();
-            existingDisegno.setImageUrl(updatedDisegno.getImageUrl());
-            existingDisegno.setTitle(updatedDisegno.getTitle());
-            return disegnoRepository.save(existingDisegno);
-        } else {
-            throw new RuntimeException("Disegno non trovato con id: " + id);
-        }
     }
 
     public Disegno findById(UUID disegnoId) {
@@ -49,7 +39,6 @@ public class DisegnoService {
             throw new RuntimeException("Disegno non trovato con id: " + id);
         }
     }
-
 
     public List<Disegno> findByTitle(String title) {
         return disegnoRepository.findByTitleContainingIgnoreCase(title);

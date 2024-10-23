@@ -29,4 +29,8 @@ public class Disegno {
     @OneToMany(mappedBy = "disegno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Commento> commenti;
 
+    public void addCommento(Commento commento) {
+        this.commenti.add(commento);
+
+    }
 }

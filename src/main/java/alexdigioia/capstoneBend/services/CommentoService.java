@@ -3,12 +3,17 @@ package alexdigioia.capstoneBend.services;
 import alexdigioia.capstoneBend.entities.Commento;
 import alexdigioia.capstoneBend.entities.Disegno;
 import alexdigioia.capstoneBend.entities.Utente;
+import alexdigioia.capstoneBend.exceptions.BadRequestException;
 import alexdigioia.capstoneBend.exceptions.NotFoundException;
 import alexdigioia.capstoneBend.exceptions.UnauthorizedException;
 import alexdigioia.capstoneBend.payloads.CommentoDTO;
 import alexdigioia.capstoneBend.repositories.CommentoRepository;
 import alexdigioia.capstoneBend.repositories.DisegnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +32,35 @@ public class CommentoService {
         this.commentoRepository = commentoRepository;
     }
 
-    public Commento save(Commento commento) {
-        return commentoRepository.save(commento);
+    public Commento save(Utente utente, CommentoDTO commentoDTO) {
+        UUID uuidDisegno;
+        try {
+            uuidDisegno = UUID.fromString(commentoDTO.disegnoId());
+        } catch (Exception e) {
+            throw new BadRequestException("L'id inserito non è valido! Necessario inserire un ID di Tipo UUID");
+        }
+
+        Disegno disegno = disegnoRepository.findById(uuidDisegno)
+                .orElseThrow(() -> new NotFoundException(uuidDisegno));
+
+        Commento nuovoCommento = new Commento(disegno, utente, commentoDTO.testo());
+
+        disegno.addCommento(nuovoCommento);
+        disegnoRepository.save(disegno);
+
+        return commentoRepository.save(nuovoCommento);
+    }
+
+    public Page<Commento> findAll(int page, int size, String sortBy) {
+        if (page > 20) page = 20;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.commentoRepository.findAll(pageable);
+    }
+
+    public Commento findById(UUID commentoId) {
+
+        return this.commentoRepository.findById(commentoId)
+                .orElseThrow(() -> new NotFoundException(commentoId));
     }
 
     public List<Commento> findByDisegno(Disegno disegno) {

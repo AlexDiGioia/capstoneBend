@@ -81,10 +81,9 @@ public class UtenteController {
     @DeleteMapping("/me/richieste/{richiestaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRichiesta(@AuthenticationPrincipal Utente utenteCorrente, @PathVariable UUID richiestaId) {
-        richiestaService.deleteRichiesta(richiestaId);
+        richiestaService.delete(richiestaId);
     }
-
-    // Commenti dell'utente loggato
+    
     @GetMapping("/me/commenti")
     public List<Commento> getCommenti(@AuthenticationPrincipal Utente utenteCorrente) {
         return commentoService.findByUtente(utenteCorrente);

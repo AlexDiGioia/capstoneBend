@@ -8,8 +8,11 @@ import alexdigioia.capstoneBend.payloads.RichiestaDTO;
 import alexdigioia.capstoneBend.repositories.DisegnoRepository;
 import alexdigioia.capstoneBend.repositories.RichiestaRepository;
 import alexdigioia.capstoneBend.repositories.UtenteRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,30 +21,48 @@ import java.util.UUID;
 public class RichiestaService {
 
     @Autowired
-    private final RichiestaRepository richiestaRepository;
+    private RichiestaRepository richiestaRepository;
     @Autowired
-    private final UtenteRepository utenteRepository;
+    private UtenteRepository utenteRepository;
     @Autowired
-    private final DisegnoRepository disegnoRepository;
+    private DisegnoRepository disegnoRepository;
 
-    public RichiestaService(RichiestaRepository richiestaRepository, UtenteRepository utenteRepository, DisegnoRepository disegnoRepository) {
-        this.richiestaRepository = richiestaRepository;
-        this.utenteRepository = utenteRepository;
-        this.disegnoRepository = disegnoRepository;
+    public Richiesta findById(UUID richiestaId) {
+        Richiesta richiesta = this.richiestaRepository.findById(richiestaId)
+                .orElseThrow(() -> new NotFoundException("Il richiesta con l'id " + richiestaId + " non è stato trovato."));
+        return richiesta;
     }
 
-    public Richiesta save(RichiestaDTO richiestaDTO) {
+    public Page<Richiesta> findAll(int page, int size, String sortBy) {
+        if (page > 20) page = 20;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.richiestaRepository.findAll(pageable);
+    }
 
-        UUID utenteId = UUID.fromString(richiestaDTO.utenteId());
+    public Richiesta save(Utente utente, RichiestaDTO richiestaDTO) {
 
-
-        Utente utente = utenteRepository.findById(utenteId)
-                .orElseThrow(() -> new NotFoundException("Utente non trovato con id: " + utenteId));
+        Richiesta nuovaRichiesta = new Richiesta(richiestaDTO.descrizione(), richiestaDTO.tipoDisegno(), richiestaDTO.sfondo(), utente);
+        nuovaRichiesta.setUtente(utente);
 
         int prezzo = calcolaPrezzo(richiestaDTO.tipoDisegno(), richiestaDTO.sfondo());
+        nuovaRichiesta.setPrezzo(prezzo);
 
-        Richiesta richiesta = new Richiesta(richiestaDTO.descrizione(), richiestaDTO.tipoDisegno(), richiestaDTO.sfondo(), utente);
-        return richiestaRepository.save(richiesta);
+        return richiestaRepository.save(nuovaRichiesta);
+    }
+
+    public Richiesta updateById(UUID richiestaId, RichiestaDTO richiestaDTO) {
+
+        Richiesta richiestaEsistente = richiestaRepository.findById(richiestaId)
+                .orElseThrow(() -> new NotFoundException("Richiesta non trovata con id: " + richiestaId));
+
+        richiestaEsistente.setDescrizione(richiestaDTO.descrizione());
+        richiestaEsistente.setTipoDisegno(richiestaDTO.tipoDisegno());
+        richiestaEsistente.setSfondoIncluso(richiestaDTO.sfondo());
+
+        int prezzo = calcolaPrezzo(richiestaDTO.tipoDisegno(), richiestaDTO.sfondo());
+        richiestaEsistente.setPrezzo(prezzo);
+
+        return richiestaRepository.save(richiestaEsistente);
     }
 
     private int calcolaPrezzo(TipoDisegno tipoDisegno, boolean sfondo) {
@@ -58,10 +79,9 @@ public class RichiestaService {
         return prezzo;
     }
 
-    @Transactional
-    public void deleteRichiesta(UUID richiestaId) {
-        Richiesta richiesta = richiestaRepository.findById(richiestaId)
-                .orElseThrow(() -> new NotFoundException("Richiesta non trovata con id: " + richiestaId));
-        richiestaRepository.delete(richiesta);
+    public void delete(UUID richiestaId) {
+        Richiesta richiesta = this.findById(richiestaId);
+        this.richiestaRepository.delete(richiesta);
     }
+
 }

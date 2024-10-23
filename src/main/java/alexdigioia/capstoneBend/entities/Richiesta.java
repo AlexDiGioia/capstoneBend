@@ -64,6 +64,7 @@ public class Richiesta {
                 throw new IllegalArgumentException("Tipo di disegno non valido!");
         }
 
+
         if (sfondoIncluso) {
             basePrice += 40.0;
         }
