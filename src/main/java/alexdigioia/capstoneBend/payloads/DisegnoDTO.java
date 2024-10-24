@@ -1,12 +1,9 @@
 package alexdigioia.capstoneBend.payloads;
 
-import jakarta.validation.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 public record DisegnoDTO(
-        @NotEmpty(message = "L'URL dell'immagine è obbligatorio.")
-        String imageUrl,
-
-        @NotEmpty(message = "Il titolo è obbligatorio.")
-        String title
+        String title,
+        MultipartFile file
 ) {
 }
