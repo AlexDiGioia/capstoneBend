@@ -1,5 +1,6 @@
 package alexdigioia.capstoneBend.payloads;
 
+import alexdigioia.capstoneBend.enums.Ruolo;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,9 @@ public record UtenteDTO(
 
         @NotEmpty(message = "Campo obbligatorio. Inserire cognome.")
         @Size(min = 3, max = 30, message = "Il cognome deve essere compreso tra 3 e 30 caratteri")
-        String cognome
+        String cognome,
+
+        Ruolo ruolo
+
 ) {
 }

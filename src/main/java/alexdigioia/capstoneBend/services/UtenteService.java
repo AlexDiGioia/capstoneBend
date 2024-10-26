@@ -1,6 +1,7 @@
 package alexdigioia.capstoneBend.services;
 
 import alexdigioia.capstoneBend.entities.Utente;
+import alexdigioia.capstoneBend.enums.Ruolo;
 import alexdigioia.capstoneBend.exceptions.BadRequestException;
 import alexdigioia.capstoneBend.exceptions.NotFoundException;
 import alexdigioia.capstoneBend.payloads.UtenteDTO;
@@ -65,18 +66,20 @@ public class UtenteService {
             throw new BadRequestException("Email già in uso!");
         }
 
-        Utente savedUtente = new Utente();
-        savedUtente.setUsername(utenteDTO.username());
-        savedUtente.setEmail(utenteDTO.email());
-        savedUtente.setPassword(bcrypt.encode(utenteDTO.password()));
-        savedUtente.setNome(utenteDTO.nome());
-        savedUtente.setCognome(utenteDTO.cognome());
+        Utente nuovoUtente = new Utente();
+        nuovoUtente.setUsername(utenteDTO.username());
+        nuovoUtente.setEmail(utenteDTO.email());
+        nuovoUtente.setPassword(bcrypt.encode(utenteDTO.password()));
+        nuovoUtente.setNome(utenteDTO.nome());
+        nuovoUtente.setCognome(utenteDTO.cognome());
+        
+        Ruolo ruolo = (utenteDTO.ruolo() != null) ? utenteDTO.ruolo() : Ruolo.STANDARD;
+        nuovoUtente.setRuolo(ruolo);
 
-        utenteRepository.save(savedUtente);
-        mailSender.sendRegistrationEmail(savedUtente);
+        utenteRepository.save(nuovoUtente);
+        mailSender.sendRegistrationEmail(nuovoUtente);
 
-        return new UtenteRespDTO(savedUtente.getIdUtente());
-
+        return new UtenteRespDTO(nuovoUtente.getIdUtente());
     }
 
     public void deleteById(UUID id) {
