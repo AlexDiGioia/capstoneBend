@@ -1,6 +1,7 @@
 package alexdigioia.capstoneBend.controllers;
 
 import alexdigioia.capstoneBend.entities.Richiesta;
+import alexdigioia.capstoneBend.entities.Utente;
 import alexdigioia.capstoneBend.payloads.RichiestaDTO;
 import alexdigioia.capstoneBend.services.RichiestaService;
 import alexdigioia.capstoneBend.services.UtenteService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,14 @@ public class RichiestaController {
                                   @RequestParam(defaultValue = "id") String sortBy) {
         return this.richiestaService.findAll(page, size, sortBy);
     }
+
+
+    @PostMapping("/crea")
+    @PreAuthorize("hasAnyAuthority('ADMIN','STANDARD')")
+    public Richiesta crea(@AuthenticationPrincipal Utente utenteCorrenteAutenticato, @RequestBody @Validated RichiestaDTO richiestaDTO) {
+        return richiestaService.save(utenteCorrenteAutenticato, richiestaDTO);
+    }
+
 
     @GetMapping("/{richiestaId}")
     public Richiesta getById(@PathVariable String richiestaId) {

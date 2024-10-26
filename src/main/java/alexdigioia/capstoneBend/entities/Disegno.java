@@ -1,5 +1,6 @@
 package alexdigioia.capstoneBend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Disegno {
     private String title;
 
 
+    @JsonIgnore
     @OneToMany(mappedBy = "disegno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Commento> commenti;
 

@@ -44,11 +44,12 @@ public class CommentoService {
                 .orElseThrow(() -> new NotFoundException(uuidDisegno));
 
         Commento nuovoCommento = new Commento(disegno, utente, commentoDTO.testo());
-
+        
         disegno.addCommento(nuovoCommento);
+
         disegnoRepository.save(disegno);
 
-        return commentoRepository.save(nuovoCommento);
+        return nuovoCommento;
     }
 
     public Page<Commento> findAll(int page, int size, String sortBy) {
@@ -72,13 +73,8 @@ public class CommentoService {
     }
 
     public Commento updateCommento(UUID commentoId, CommentoDTO commentoDTO, Utente utenteCorrente) {
-        UUID utenteId = UUID.fromString(commentoDTO.utenteId());
-        UUID disegnoId = UUID.fromString(commentoDTO.disegnoId());
 
-        // Verifica che l'utente loggato sia lo stesso dell'ID nel commento
-        if (!utenteCorrente.getIdUtente().equals(utenteId)) {
-            throw new UnauthorizedException("Non sei autorizzato a modificare questo commento.");
-        }
+        UUID disegnoId = UUID.fromString(commentoDTO.disegnoId());
 
         Disegno disegno = disegnoRepository.findById(disegnoId)
                 .orElseThrow(() -> new NotFoundException("Disegno non trovato con id: " + disegnoId));

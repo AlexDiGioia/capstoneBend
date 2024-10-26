@@ -45,7 +45,7 @@ public class CommentoController {
 
 
     @PostMapping("/crea")
-    @PreAuthorize("hasAnyAuthority('ADMIN','BASIC_USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','STANDARD')")
     @ResponseStatus(HttpStatus.CREATED)
     public Commento save(@AuthenticationPrincipal Utente utenteCorrenteAutenticato, @RequestBody @Validated CommentoDTO commentoDTO) {
 
