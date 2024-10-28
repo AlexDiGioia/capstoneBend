@@ -28,7 +28,7 @@ public class RichiestaController {
     @GetMapping
     public Page<Richiesta> getAll(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "20") int size,
-                                  @RequestParam(defaultValue = "id") String sortBy) {
+                                  @RequestParam(defaultValue = "idRichiesta") String sortBy) {
         return this.richiestaService.findAll(page, size, sortBy);
     }
 
