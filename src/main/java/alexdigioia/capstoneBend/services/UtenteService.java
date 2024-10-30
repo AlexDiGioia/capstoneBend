@@ -1,5 +1,6 @@
 package alexdigioia.capstoneBend.services;
 
+import alexdigioia.capstoneBend.entities.Richiesta;
 import alexdigioia.capstoneBend.entities.Utente;
 import alexdigioia.capstoneBend.enums.Ruolo;
 import alexdigioia.capstoneBend.exceptions.BadRequestException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,6 +63,12 @@ public class UtenteService {
                 .orElseThrow(() -> new NotFoundException("L'utente con l'email " + email + " non è stato trovato."));
     }
 
+    public List<Richiesta> getRichiesteByUtente(Utente utenteCorrente) {
+        Utente utente = utenteRepository.findByIdWithRichieste(utenteCorrente.getIdUtente())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        return utente.getRichiesteList();
+    }
+
     public UtenteRespDTO save(UtenteDTO utenteDTO) {
         if (utenteRepository.existsByEmail(utenteDTO.email())) {
             throw new BadRequestException("Email già in uso!");
@@ -72,7 +80,7 @@ public class UtenteService {
         nuovoUtente.setPassword(bcrypt.encode(utenteDTO.password()));
         nuovoUtente.setNome(utenteDTO.nome());
         nuovoUtente.setCognome(utenteDTO.cognome());
-        
+
         Ruolo ruolo = (utenteDTO.ruolo() != null) ? utenteDTO.ruolo() : Ruolo.STANDARD;
         nuovoUtente.setRuolo(ruolo);
 

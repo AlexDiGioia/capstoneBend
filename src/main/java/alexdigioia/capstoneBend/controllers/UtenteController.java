@@ -9,6 +9,7 @@ import alexdigioia.capstoneBend.payloads.UtenteRespDTO;
 import alexdigioia.capstoneBend.services.CommentoService;
 import alexdigioia.capstoneBend.services.RichiestaService;
 import alexdigioia.capstoneBend.services.UtenteService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -73,9 +74,10 @@ public class UtenteController {
     }
 
     // Richieste dell'utente loggato
+    @Transactional
     @GetMapping("/me/richieste")
     public List<Richiesta> getRichieste(@AuthenticationPrincipal Utente utenteCorrente) {
-        return utenteCorrente.getRichiesteList();
+        return utenteService.getRichiesteByUtente(utenteCorrente);
     }
 
     @DeleteMapping("/me/richieste/{richiestaId}")
@@ -83,7 +85,7 @@ public class UtenteController {
     public void deleteRichiesta(@AuthenticationPrincipal Utente utenteCorrente, @PathVariable UUID richiestaId) {
         richiestaService.delete(richiestaId);
     }
-    
+
     @GetMapping("/me/commenti")
     public List<Commento> getCommenti(@AuthenticationPrincipal Utente utenteCorrente) {
         return commentoService.findByUtente(utenteCorrente);
